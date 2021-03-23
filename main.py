@@ -61,6 +61,7 @@ if __name__ == "__main__":
     # Creating video writer object
     OutVid = cv2.VideoWriter('Videos/FinalVideo.avi', cv2.VideoWriter_fourcc(*'XVID'), ArucoVid_Cap.get(cv2.CAP_PROP_FPS), (int(ArucoVid_Cap.get(3)), int(ArucoVid_Cap.get(4)))) 
 
+    SkippedFrames = []          # record of skipped frames will be kept here
 
     while True:
         # Checking if all videos are opened.
@@ -90,7 +91,10 @@ if __name__ == "__main__":
         # Detecting Aruco markers in the frame
         BoxCoordinates = FindBoxCoordinates(ArucoVid_Frame)
 
+        # If aruco markers are not found, skip this frame and read next frame
         if BoxCoordinates is None:
+            # Storing the timestamp
+            SkippedFrames.append(ArucoVid_Cap.get(cv2.CAP_PROP_POS_MSEC))
             continue
 
         OverlapedFrame = OverlapFrames(ArucoVid_Frame, ProjVid_Frame, BoxCoordinates)
@@ -108,3 +112,8 @@ if __name__ == "__main__":
     OutVid.release()
     cv2.destroyAllWindows()
 
+    if len(SkippedFrames) > 0:
+        print("Few frames were skipped because any or all aruco marker was not found.")
+        print(SkippedFrames)
+
+        
