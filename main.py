@@ -25,6 +25,32 @@ def FindBoxCoordinates(Frame):
     return BoxCoordinates    
 
 
+def ProjectiveTransform(Frame, Coordinates, TransFrameShape):
+    Height, Width = Frame.shape[:2]
+    InitialPoints = np.float32([[0, 0], [Width-1, 0], [0, Height-1], [Width-1, Height-1]])
+    FinalPoints = np.float32([Coordinates[0], Coordinates[1], Coordinates[3], Coordinates[2]])
+    
+    ProjectiveMatrix = cv2.getPerspectiveTransform(InitialPoints, FinalPoints)
+    TransformedFrame = cv2.warpPerspective(Frame, ProjectiveMatrix, TransFrameShape[::-1])
+    
+    return TransformedFrame
+
+
+def OverlapFrames(BaseFrame, SecFrame, BoxCoordinates):
+    # Finding transformed image
+    TransformedFrame = ProjectiveTransform(SecFrame, BoxCoordinates, BaseFrame.shape[:2])
+
+
+    # Overlaping frames
+    SecFrame_Mask = np.zeros(BaseFrame.shape, dtype=np.uint8)
+    cv2.fillConvexPoly(SecFrame_Mask, np.asarray(BoxCoordinates, dtype=np.int32), (255, )*BaseFrame.shape[2])
+
+    BaseFrame = cv2.bitwise_and(BaseFrame, cv2.bitwise_not(SecFrame_Mask))
+    OverlapedFrame = cv2.bitwise_or(BaseFrame, TransformedFrame)
+    
+    return OverlapedFrame
+
+
 if __name__ == "__main__":
     # Firstly, reading aruco video.
     ArucoVid_Cap = cv2.VideoCapture("Videos/ArucoVideo_OnWall.mp4")
@@ -63,3 +89,22 @@ if __name__ == "__main__":
         
         # Detecting Aruco markers in the frame
         BoxCoordinates = FindBoxCoordinates(ArucoVid_Frame)
+
+        if BoxCoordinates is None:
+            continue
+
+        OverlapedFrame = OverlapFrames(ArucoVid_Frame, ProjVid_Frame, BoxCoordinates)
+
+        # Storing to output video
+        OutVid.write(OverlapedFrame)
+
+        # Displaying Output video
+        cv2.imshow("Output Video", OverlapedFrame)
+        cv2.waitKey(1)
+
+    # Releasing video objects and destroying windows
+    ArucoVid_Cap.release()
+    ProjVid_Cap.release()
+    OutVid.release()
+    cv2.destroyAllWindows()
+
