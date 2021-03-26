@@ -1,0 +1,3 @@
+PROJECT(AR_TV)
+
+ADD_EXECUTABLE(AR_TV main.cpp)

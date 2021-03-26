@@ -59,7 +59,7 @@ if __name__ == "__main__":
     ProjVid_Cap = cv2.VideoCapture("Videos/ProjVid.mpeg")
 
     # Creating video writer object
-    OutVid = cv2.VideoWriter('Videos/FinalVideo.avi', cv2.VideoWriter_fourcc(*'XVID'), ArucoVid_Cap.get(cv2.CAP_PROP_FPS), (int(ArucoVid_Cap.get(3)), int(ArucoVid_Cap.get(4)))) 
+    OutVid = cv2.VideoWriter('Videos/FinalVideo_py.avi', cv2.VideoWriter_fourcc(*'XVID'), ArucoVid_Cap.get(cv2.CAP_PROP_FPS), (int(ArucoVid_Cap.get(3)), int(ArucoVid_Cap.get(4)))) 
 
     SkippedFrames = []          # record of skipped frames will be kept here
 
@@ -116,4 +116,3 @@ if __name__ == "__main__":
         print("Few frames were skipped because any or all aruco marker was not found.")
         print(SkippedFrames)
 
-        
