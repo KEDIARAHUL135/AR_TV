@@ -22,4 +22,6 @@
 
 
 # Videos
-/Videos
+/**/*.mp4
+/**/*.avi
+/**/*.mpeg
