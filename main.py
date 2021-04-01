@@ -1,11 +1,10 @@
-import os
 import cv2
 import numpy as np
 
 
 
 def FindBoxCoordinates(Frame):
-    # Detecting markerrs
+    # Detecting markers
     GrayFrame = cv2.cvtColor(Frame,cv2.COLOR_BGR2GRAY)
     ArucoDict = cv2.aruco.Dictionary_get(cv2.aruco.DICT_6X6_50)
     Parameters = cv2.aruco.DetectorParameters_create()
@@ -52,7 +51,7 @@ def OverlapFrames(BaseFrame, SecFrame, BoxCoordinates):
 
 
 if __name__ == "__main__":
-    # Firstly, reading aruco video.
+    # Reading aruco video.
     ArucoVid_Cap = cv2.VideoCapture("Videos/ArucoVideo_OnWall.mp4")
 
     # Reading video for projection
@@ -83,6 +82,7 @@ if __name__ == "__main__":
             exit()
 
         # Restart the projection video if finished
+        # (The output video will end when the input aruco video ends, not the projection video)
         if not retProjVid:
             ProjVid_Cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
             retProjVid, ProjVid_Frame = ProjVid_Cap.read()
